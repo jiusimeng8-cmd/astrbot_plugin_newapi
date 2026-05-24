@@ -1,0 +1,237 @@
+{
+    "binding_settings": {
+        "description": "核心绑定功能",
+        "type": "object",
+        "items": {
+            "binding_group": { "description": "绑定后自动设置的用户组", "type": "string", "default": "default" },
+            "min_qq_level": { "description": "允许绑定的最低QQ等级", "type": "int", "default": 16 },
+            "quota_display_ratio": { "description": "额度显示汇率 (原始Quota / 此值)", "type": "int", "default": 500000 },
+            "rebinding_cooldown_minutes": { "description": "用户自助解绑后再次绑定的冷却分钟数", "type": "int", "default": 30 }
+        }
+    },
+    "check_in_settings": {
+         "description": "每日签到功能",
+         "type": "object",
+         "items": {
+            "enabled": { "description": "是否启用签到功能", "type": "bool", "default": true },
+            "sync_from_newapi": { "description": "是否同步 NewAPI 后台签到配置。开启后使用 NewAPI 的 checkin_setting.enabled/min_quota/max_quota", "type": "bool", "default": true },
+            "timezone_offset_hours": { "description": "时区偏移量 (例如 UTC+8 填 8)", "type": "int", "default": 8 },
+            "min_display_quota": { "description": "每日签到可获得的最小显示额度", "type": "float", "default": 1500 },
+            "max_display_quota": { "description": "每日签到可获得的最大显示额度", "type": "float", "default": 1500 },
+            "double_chance": { "description": "触发翻倍奖励的概率", "type": "float", "default": 0.1 },
+            "first_check_in_bonus_enabled": { "description": "是否发放首次签到奖励", "type": "bool", "default": true },
+            "first_check_in_bonus_display_quota": { "description": "首次签到额外奖励的显示额度", "type": "float", "default": 2 },
+            "check_in_success_template": { "description": "签到成功的消息模板", "type": "text", "default": "签到成功！您获得了 {display_added} 额度，当前剩余总额度为 {display_total}。" },
+            "check_in_doubled_template": { "description": "签到触发翻倍的消息模板", "type": "text", "default": "🎉 好运连连！签到成功并触发了双倍奖励！🎉\n\n您获得了 {display_added} 额度，当前剩余总额度为 {display_total}。" },
+            "first_check_in_success_template": { "description": "首次签到成功的消息模板", "type": "text", "default": "✨ 欢迎您的第一次签到！✨\n\n您获得了 {display_added} 额度 (内含一份额外新人礼包哦！)\n当前剩余总额度为 {display_total}。" }
+         }
+    },
+    "group_leave_settings": {
+        "description": "退群自动净化",
+        "type": "object",
+        "items": {
+            "group_monitoring_list": { "description": "需要监控的群号列表", "type": "list", "default": [] },
+            "revert_group_on_leave": { "description": "退群后恢复的用户组", "type": "string", "default": "default" }
+        }
+    },
+    "group_welcome_settings": {
+        "description": "进群欢迎与绑定提示",
+        "type": "object",
+        "items": {
+            "enabled": { "description": "是否启用新成员进群欢迎", "type": "bool", "default": true },
+            "at_new_member": { "description": "欢迎语是否 @ 新成员", "type": "bool", "default": true },
+            "send_private_message": { "description": "是否同时私聊新成员绑定流程", "type": "bool", "default": true },
+            "welcome_template": {
+                "description": "群内欢迎语模板。可用变量：{at}、{user_id}、{group_id}、{bot_id}",
+                "type": "text",
+                "default": "{at}欢迎进群。\n如果你要使用 NewAPI 余额、兑换码或充值入账，请先绑定网站账号。\n绑定方式：私聊机器人发送 /绑定 你的网站ID，然后发送 确认绑定。\n也可以在群里发“怎么绑定”，我会把说明私聊你。"
+            },
+            "private_welcome_template": {
+                "description": "私聊绑定流程模板。可用变量：{user_id}、{group_id}、{bot_id}",
+                "type": "text",
+                "default": "欢迎进群。\n\n为了在 QQ 里查询余额、使用兑换码提醒、充值入账和接收站点通知，请先绑定你的 NewAPI 网站账号。\n\n绑定流程：\n1. 打开 NewAPI 网站，进入个人信息/账号页面，找到你的网站 ID。\n2. 私聊我发送：/绑定 你的网站ID\n   例如：/绑定 32\n3. 我会让你核对一次，确认无误后发送：确认绑定\n\n注意：请一定填写自己的网站 ID。如果绑成别人的 ID，后续充值或余额操作可能会进入别人的账号。\n\n常用命令：\n/查询余额\n/今日消耗\n/自助解绑"
+            }
+        }
+    },
+    "join_approval_settings": {
+        "description": "入群审批规则",
+        "type": "object",
+        "items": {
+            "enabled": { "description": "是否启用本插件的入群审批。若同时开启其他群管插件审批，可能会冲突", "type": "bool", "default": false },
+            "group_list": { "description": "启用审批规则的群号列表。留空表示所有群", "type": "list", "default": [] },
+            "mode": {
+                "description": "审批模式：auto_approve=自动同意，keyword=命中关键词同意，newapi_user=申请理由含有效 NewAPI 网站ID或用户名才同意，manual=只通知管理员不处理，reject=自动拒绝",
+                "type": "string",
+                "default": "auto_approve"
+            },
+            "allow_newapi_identity_match": { "description": "在任意审批模式下，只要申请理由包含有效 NewAPI 网站ID或用户名就自动同意", "type": "bool", "default": false },
+            "approve_keywords": { "description": "keyword 模式下，申请理由包含这些关键词才自动同意", "type": "list", "default": [] },
+            "blacklist_qq": { "description": "黑名单 QQ 列表，命中后自动拒绝", "type": "list", "default": [] },
+            "blacklist_keywords": { "description": "申请理由黑名单关键词，命中后自动拒绝", "type": "list", "default": [] },
+            "reject_reason": { "description": "拒绝入群时显示给申请人的理由", "type": "string", "default": "入群申请未通过，请联系管理员。" },
+            "notify_group_id": { "description": "审批结果通知群号。0 表示不发群通知", "type": "int", "default": 0 },
+            "notify_admin_private": { "description": "是否私聊通知管理员", "type": "bool", "default": false },
+            "notify_admin_qq_list": { "description": "接收入群审批私聊通知的管理员 QQ 列表", "type": "list", "default": [] },
+            "notify_template": {
+                "description": "审批通知模板。可用变量：{decision_text}、{group_id}、{nickname}、{user_id}、{comment}、{flag}、{reason}",
+                "type": "text",
+                "default": "入群申请：{decision_text}\n群号：{group_id}\n昵称：{nickname}\nQQ：{user_id}\n理由：{comment}\nflag：{flag}\n原因：{reason}"
+            }
+        }
+    },
+    "relationship_request_settings": {
+        "description": "好友申请与群邀请处理",
+        "type": "object",
+        "items": {
+            "enabled": { "description": "是否启用本插件处理好友申请与群邀请。开启后建议关闭 relationship 等同类插件，避免重复处理", "type": "bool", "default": true },
+            "auto_agree_friend": { "description": "是否自动同意好友申请。适合需要用户私聊绑定的场景", "type": "bool", "default": false },
+            "auto_reject_friend": { "description": "是否自动拒绝好友申请。优先级低于好友黑名单", "type": "bool", "default": false },
+            "auto_agree_group_invite": { "description": "是否自动同意邀请机器人进群。公开部署时建议谨慎开启", "type": "bool", "default": false },
+            "auto_reject_group_invite": { "description": "是否自动拒绝邀请机器人进群。优先级低于群黑名单", "type": "bool", "default": false },
+            "friend_blacklist_qq": { "description": "好友申请黑名单 QQ 列表，命中后自动拒绝", "type": "list", "default": [] },
+            "group_blacklist": { "description": "群邀请黑名单群号列表，命中后自动拒绝", "type": "list", "default": [] },
+            "reject_reason": { "description": "拒绝好友申请或群邀请时使用的理由", "type": "string", "default": "暂不接受该申请，请联系管理员。" },
+            "notify_admin_private": { "description": "是否私聊通知管理员申请处理结果", "type": "bool", "default": true },
+            "notify_admin_qq_list": { "description": "接收好友/群邀请通知的管理员 QQ 列表。留空时会复用入群审批管理员列表", "type": "list", "default": [] },
+            "notify_template": {
+                "description": "申请通知模板。可用变量：{request_type}、{decision_text}、{group_id}、{user_id}、{comment}、{flag}、{reason}",
+                "type": "text",
+                "default": "{request_type}：{decision_text}\n群号：{group_id}\nQQ：{user_id}\n理由：{comment}\nflag：{flag}\n原因：{reason}"
+            }
+        }
+    },
+    "llm_admin_settings": {
+        "description": "LLM 自然语言管理",
+        "type": "object",
+        "items": {
+            "enabled": { "description": "是否启用管理员自然语言管理。只对 AstrBot 管理员开放", "type": "bool", "default": true }
+        }
+    },
+    "knowledge_settings": {
+        "description": "知识库设置",
+        "type": "object",
+        "items": {
+            "enable_llm_polish": { "description": "查询知识库时是否使用 LLM 润色答案。关闭后直接返回原始知识库内容", "type": "bool", "default": true },
+            "answer_tone": { "description": "LLM 润色时的回答风格", "type": "string", "default": "自然、清楚、有一点人味，但不要编造知识库没有的信息" },
+            "max_source_chars": { "description": "传给 LLM 的知识库内容最大字符数", "type": "int", "default": 3000 }
+        }
+    },
+    "web_search_settings": {
+        "description": "联网搜索设置",
+        "type": "object",
+        "items": {
+            "enabled": { "description": "是否启用联网搜索。开源默认关闭，需配置 Tavily 或 Brave API Key", "type": "bool", "default": false },
+            "provider": { "description": "搜索提供商：tavily 或 brave", "type": "string", "default": "tavily" },
+            "tavily_api_key": { "description": "Tavily API Key", "type": "string", "default": "" },
+            "brave_api_key": { "description": "Brave Search API Key", "type": "string", "default": "" },
+            "result_count": { "description": "搜索结果数量", "type": "int", "default": 5 },
+            "fetch_pages": { "description": "是否抓取搜索结果网页正文。关闭为轻量版，开启为中等版", "type": "bool", "default": false },
+            "fetch_page_count": { "description": "最多抓取前几个网页正文", "type": "int", "default": 3 },
+            "max_page_chars": { "description": "每个网页最多读取字符数", "type": "int", "default": 6000 },
+            "use_llm_summary": { "description": "是否使用 LLM 根据搜索结果总结", "type": "bool", "default": true },
+            "admin_only": { "description": "是否仅允许管理员使用联网搜索", "type": "bool", "default": false }
+        }
+    },
+    "auto_answer_settings": {
+        "description": "自动工具路由问答",
+        "type": "object",
+        "items": {
+            "enabled": { "description": "是否启用自动工具路由。开启后机器人可在私聊或被 @ 时自动查知识库/联网搜索回答", "type": "bool", "default": false },
+            "only_when_mentioned": { "description": "群聊中是否只在 @ 机器人时触发", "type": "bool", "default": true },
+            "group_enabled_list": { "description": "允许自动问答的群号列表。留空表示所有群", "type": "list", "default": [] },
+            "min_query_length": { "description": "触发自动问答的最短问题长度", "type": "int", "default": 4 },
+            "trigger_words": { "description": "非 @ 时可触发的关键词。only_when_mentioned 开启时通常不用填", "type": "list", "default": ["怎么", "如何", "是什么", "为什么", "哪里", "多少钱"] },
+            "use_knowledge_base": { "description": "是否优先查询本地知识库", "type": "bool", "default": true },
+            "kb_result_count": { "description": "知识库最多取几条结果", "type": "int", "default": 3 },
+            "use_web_search_fallback": { "description": "知识库未命中时，是否允许后台联网搜索", "type": "bool", "default": false },
+            "always_include_web_search": { "description": "即使知识库命中，也同时联网搜索补充。一般不建议开启", "type": "bool", "default": false },
+            "max_context_chars": { "description": "传给 LLM 的工具结果最大字符数", "type": "int", "default": 6000 }
+        }
+    },
+    "usage_stats_settings": {
+        "description": "NewAPI 消耗统计",
+        "type": "object",
+        "items": {
+            "page_size": { "description": "实时统计每页读取 NewAPI 日志数量", "type": "int", "default": 100 },
+            "max_pages": { "description": "实时统计最多读取多少页日志。页数越大越准，但越慢", "type": "int", "default": 30 }
+        }
+    },
+    "qq_payment_probe_settings": {
+        "description": "QQ 私聊收款实验监听",
+        "type": "object",
+        "items": {
+            "enabled": { "description": "是否启用 QQ 私聊红包/转账实验监听。只记录日志，不自动入账", "type": "bool", "default": true },
+            "log_all_private_non_text": { "description": "是否记录所有私聊非纯文本事件。调试时可开启，平时建议关闭", "type": "bool", "default": false },
+            "keywords": { "description": "疑似收款事件关键词", "type": "list", "default": ["转账", "红包", "收款", "QQ钱包", "财付通", "付款", "已收款", "已领取"] },
+            "max_log_chars": { "description": "单条原始事件日志最多记录字符数", "type": "int", "default": 4000 }
+        }
+    },
+    "heist_settings": {
+        "description": "【娱乐功能】打劫设置",
+        "type": "object",
+        "items": {
+            "enabled": { "description": "是否启用打劫功能", "type": "bool", "default": true },
+            "max_attempts_per_day": { "description": "每个用户每天可以主动打劫的次数", "type": "int", "default": 1 },
+            "max_defenses_per_day": { "description": "每个用户每天被【成功】打劫的次数上限", "type": "int", "default": 3 },
+            "min_amount": { "description": "成功打劫时，获得的最小【显示额度】", "type": "float", "default": 5.0 },
+            "max_amount": { "description": "成功打劫时，获得的最大【显示额度】", "type": "float", "default": 40.0 },
+            "critical_chance": { "description": "触发暴击（双倍奖励）的概率 (0.0 到 1.0)", "type": "float", "default": 0.1 },
+            "failure_chance": { "description": "打劫失败并触发惩罚的概率 (0.0 到 1.0)", "type": "float", "default": 0.5 },
+            "failure_penalty": { "description": "打劫失败时，赔偿给对方的【显示额度】", "type": "float", "default": 100.0 },
+            "cooldown_seconds": { "description": "两次打劫之间的冷却时间（秒）", "type": "int", "default": 3600 },
+            "success_template": { 
+                "description": "打劫成功的消息模板。可用变量: {gain}", 
+                "type": "text", 
+                "default": "✅ 打劫成功！你悄悄地从对方口袋里摸走了 {gain:.2f} 额度。" 
+            },
+            "critical_template": { 
+                "description": "打劫暴击的消息模板。可用变量: {gain}", 
+                "type": "text", 
+                "default": "🎉 暴击！你的手法如此娴熟，居然摸走了双倍的 {gain:.2f} 额度！" 
+            },
+            "failure_template": { 
+                "description": "打劫失败的消息模板。可用变量: {penalty}", 
+                "type": "text", 
+                "default": "💥 失手了！你在打劫时笨手笨脚，反被对方揍了一顿，赔偿了 {penalty:.2f} 额度。" 
+            },
+            "attempts_exceeded_template": { 
+                "description": "打劫者次数用尽的提示", 
+                "type": "text", 
+                "default": "🥵 你今天已经打劫累了，先去歇会儿吧，明天再来。" 
+            },
+            "defenses_exceeded_template": { 
+                "description": "受害者次数用尽的提示。可用变量: {victim_id}", 
+                "type": "text", 
+                "default": "🛡️ 对方(ID:{victim_id})今天已经被打劫太多次了，看起来已经有了防备，换个目标吧。" 
+            },
+            "victim_not_found_template": { 
+                "description": "未找到目标的提示。可用变量: {victim_identifier}", 
+                "type": "text", 
+                "default": "💨 你朝着空气挥舞拳头，但并没有找到ID为 {victim_identifier} 的目标。" 
+            },
+            "cannot_rob_self_template": { 
+                "description": "打劫自己的提示", 
+                "type": "text", 
+                "default": "🤦‍♂️ 你不能打劫你自己，这毫无意义！" 
+            },
+            "robber_not_bound_template": { 
+                "description": "打劫者未绑定的提示", 
+                "type": "text", 
+                "default": "🤔 你自己都还没绑定账号，抢来的钱往哪儿放呢？快去 /绑定 吧！" 
+            },
+            "cooldown_template": {
+                "description": "打劫冷却中的提示。可用变量: {remaining_time}",
+                "type": "text",
+                "default": "⏳ 你刚刚打劫完，正在被官府通缉呢！先躲一会儿吧，还剩 {remaining_time} 秒才能再次行动。"
+            }
+        }
+    },
+    "optional_pm_settings": {
+        "description": "可选的私信通知",
+        "type": "object",
+        "items": {
+            "enable_bind_success_pm": { "description": "是否在绑定成功后发送私信", "type": "bool", "default": true },
+            "bind_success_pm_template": { "description": "绑定成功私信的内容模板", "type": "text", "default": "绑定成功！" }
+        }
+    }
+}
