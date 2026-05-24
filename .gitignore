@@ -197,6 +197,7 @@ cython_debug/
 # Project/local secrets and runtime artifacts
 .env
 .env.*
+!.env.example
 *.bak
 *.bak.*
 *.bak_*
