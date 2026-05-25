@@ -101,10 +101,10 @@
         }
     },
     "llm_admin_settings": {
-        "description": "LLM 自然语言管理",
+        "description": "LLM 管理解析（可选，高级功能）",
         "type": "object",
         "items": {
-            "enabled": { "description": "是否启用管理员自然语言管理。只对 AstrBot 管理员开放", "type": "bool", "default": true }
+            "enabled": { "description": "是否启用 LLM 管理解析。默认关闭；建议优先使用菜单和明确命令管理", "type": "bool", "default": false }
         }
     },
     "knowledge_settings": {
@@ -157,20 +157,20 @@
         }
     },
     "qq_payment_probe_settings": {
-        "description": "QQ 私聊收款实验监听",
+        "description": "QQ 私聊收款监听（保留项，默认关闭）",
         "type": "object",
         "items": {
-            "enabled": { "description": "是否启用 QQ 私聊红包/转账实验监听。只记录日志，不自动入账", "type": "bool", "default": true },
+            "enabled": { "description": "是否启用 QQ 私聊红包/转账监听。默认关闭；当前只记录日志，不自动入账", "type": "bool", "default": false },
             "log_all_private_non_text": { "description": "是否记录所有私聊非纯文本事件。调试时可开启，平时建议关闭", "type": "bool", "default": false },
             "keywords": { "description": "疑似收款事件关键词", "type": "list", "default": ["转账", "红包", "收款", "QQ钱包", "财付通", "付款", "已收款", "已领取"] },
             "max_log_chars": { "description": "单条原始事件日志最多记录字符数", "type": "int", "default": 4000 }
         }
     },
     "heist_settings": {
-        "description": "【娱乐功能】打劫设置",
+        "description": "打劫功能（保留项，默认关闭）",
         "type": "object",
         "items": {
-            "enabled": { "description": "是否启用打劫功能", "type": "bool", "default": true },
+            "enabled": { "description": "是否启用打劫功能。默认关闭，主线群管场景不建议开启", "type": "bool", "default": false },
             "max_attempts_per_day": { "description": "每个用户每天可以主动打劫的次数", "type": "int", "default": 1 },
             "max_defenses_per_day": { "description": "每个用户每天被【成功】打劫的次数上限", "type": "int", "default": 3 },
             "min_amount": { "description": "成功打劫时，获得的最小【显示额度】", "type": "float", "default": 5.0 },
